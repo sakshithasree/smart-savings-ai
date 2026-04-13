@@ -5,7 +5,7 @@
 
 Smart Savings AI is a financial intelligence platform that forecasts a user's future account balance and generates personalized, risk-aware savings recommendations. The system is built on a two-stage predictive pipeline that combines a Long Short-Term Memory (LSTM) network for temporal sequence modeling with an XGBoost regressor for structured feature refinement, achieving an R² score of **0.9846** on held-out financial transaction data.
 
-The system was developed as part of a research contribution from the Computer Engineering Department, Kumaraguru College of Technology, Coimbatore, India.
+
 
 ---
 
