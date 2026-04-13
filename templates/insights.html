@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Insights - Smart Savings AI{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="page-header">
+        <h1>AI-Driven Insights</h1>
+        <p>Graphs update based on the latest Scenario Lab simulation</p>
+    </div>
+
+    <div class="stats-grid four-up">
+        <div class="mini-card">
+            <div class="stat-icon cyan">✓</div>
+            <h3>Simulation Linked</h3>
+            <p>Insights reflect the latest generated simulation</p>
+        </div>
+        <div class="mini-card">
+            <div class="stat-icon orange">⚠</div>
+            <h3>Dynamic Analysis</h3>
+            <p>Every simulation run changes the charts</p>
+        </div>
+        <div class="mini-card">
+            <div class="stat-icon blue">↗</div>
+            <h3>Model-Based Output</h3>
+            <p>Charts are built from simulated model results</p>
+        </div>
+        <div class="mini-card">
+            <div class="stat-icon pink">✓</div>
+            <h3>{{ risk_text }}</h3>
+            <p>Calculated from the latest generated scenario</p>
+        </div>
+    </div>
+
+    <div class="two-col-layout">
+        <div class="panel-card">
+            <h2>Expense Distribution</h2>
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+        <div class="panel-card">
+            <h2>Weekly Spending Pattern</h2>
+            <canvas id="weeklySpendingChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <h2>Income vs Expense vs Savings</h2>
+        <canvas id="incomeExpenseChart"></canvas>
+    </div>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+const categoryLabels = {{ category_labels | tojson }};
+const categoryValues = {{ category_values | tojson }};
+const weeklyLabels = {{ weekly_labels | tojson }};
+const weeklySpending = {{ weekly_spending | tojson }};
+const incomeExpenseLabels = {{ income_expense_labels | tojson }};
+const incomeValues = {{ income_values | tojson }};
+const expenseValues = {{ expense_values | tojson }};
+const savingsValues = {{ savings_values | tojson }};
+
+new Chart(document.getElementById('categoryChart'), {
+    type: 'pie',
+    data: {
+        labels: categoryLabels,
+        datasets: [{
+            data: categoryValues,
+            backgroundColor: ['#6366f1','#06b6d4','#10b981','#f59e0b','#8b5cf6','#ec4899']
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { labels: { color: '#d4dbf5' } }
+        }
+    }
+});
+
+new Chart(document.getElementById('weeklySpendingChart'), {
+    type: 'bar',
+    data: {
+        labels: weeklyLabels,
+        datasets: [{
+            label: 'Weekly Spending',
+            data: weeklySpending,
+            backgroundColor: ['#17c6ff','#20c3ff','#2fb5ff','#8b5cf6'],
+            borderRadius: 10
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { labels: { color: '#d4dbf5' } }
+        },
+        scales: {
+            x: { ticks: { color: '#9aa4c7' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+            y: { ticks: { color: '#9aa4c7' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+        }
+    }
+});
+
+new Chart(document.getElementById('incomeExpenseChart'), {
+    type: 'line',
+    data: {
+        labels: incomeExpenseLabels,
+        datasets: [
+            {
+                label: 'Income',
+                data: incomeValues,
+                borderColor: '#10b981',
+                tension: 0.35,
+                pointBackgroundColor: '#10b981'
+            },
+            {
+                label: 'Expenses',
+                data: expenseValues,
+                borderColor: '#ef4444',
+                tension: 0.35,
+                pointBackgroundColor: '#ef4444'
+            },
+            {
+                label: 'Savings',
+                data: savingsValues,
+                borderColor: '#15c5ff',
+                tension: 0.35,
+                pointBackgroundColor: '#15c5ff'
+            }
+        ]
+    },
+    options: {
+        plugins: {
+            legend: { labels: { color: '#d4dbf5' } }
+        },
+        scales: {
+            x: { ticks: { color: '#9aa4c7' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+            y: { ticks: { color: '#9aa4c7' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+        }
+    }
+});
+</script>
+{% endblock %}

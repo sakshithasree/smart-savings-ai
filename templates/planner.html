@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block title %}Financial Planner - Smart Savings AI{% endblock %}
+
+{% block content %}
+<div class="page planner-page">
+    <div class="page-header">
+        <h1>AI Financial Planner</h1>
+        <p>Enter financial parameters for real AI-based savings prediction</p>
+    </div>
+
+    <div class="planner-shell">
+        <div class="planner-main-card">
+            <div class="planner-card-header">
+                <h2>Financial Inputs</h2>
+                <p>Provide the input features required by the model</p>
+            </div>
+
+            <form id="plannerForm" class="planner-grid-form">
+                <div class="planner-field">
+                    <label for="income">Income</label>
+                    <input id="income" type="number" step="any" name="income" placeholder="6500" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="expense">Expense</label>
+                    <input id="expense" type="number" step="any" name="expense" placeholder="2840" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="balance">Balance</label>
+                    <input id="balance" type="number" step="any" name="balance" placeholder="5800" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="txn_count">Transaction Count</label>
+                    <input id="txn_count" type="number" name="txn_count" placeholder="18" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="avg_txn">Average Transaction</label>
+                    <input id="avg_txn" type="number" step="any" name="avg_txn" placeholder="158" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="rolling_7_exp">7-day Avg Expense</label>
+                    <input id="rolling_7_exp" type="number" step="any" name="rolling_7_exp" placeholder="3100" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="rolling_7_inc">7-day Avg Income</label>
+                    <input id="rolling_7_inc" type="number" step="any" name="rolling_7_inc" placeholder="6500" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="lag_exp_1">Yesterday Expense</label>
+                    <input id="lag_exp_1" type="number" step="any" name="lag_exp_1" placeholder="420" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="lag_exp_3">3 Days Ago Expense</label>
+                    <input id="lag_exp_3" type="number" step="any" name="lag_exp_3" placeholder="390" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="lag_bal_1">Yesterday Balance</label>
+                    <input id="lag_bal_1" type="number" step="any" name="lag_bal_1" placeholder="5650" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="lag_bal_7">Last Week Balance</label>
+                    <input id="lag_bal_7" type="number" step="any" name="lag_bal_7" placeholder="5400" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="dow">Day of Week (0=Mon ... 6=Sun)</label>
+                    <input id="dow" type="number" name="dow" min="0" max="6" placeholder="2" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="is_weekend">Is Weekend (0=No, 1=Yes)</label>
+                    <input id="is_weekend" type="number" name="is_weekend" min="0" max="1" placeholder="0" required>
+                </div>
+
+                <div class="planner-field">
+                    <label for="days_since_inc">Days Since Last Income</label>
+                    <input id="days_since_inc" type="number" name="days_since_inc" placeholder="12" required>
+                </div>
+
+                <div class="planner-submit-wrap">
+                    <button type="submit" class="planner-submit-btn">Generate Prediction</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="planner-result-card">
+            <div class="planner-card-header">
+                <h2>AI Recommendation</h2>
+                <p>Prediction output from your model pipeline</p>
+            </div>
+
+            <div id="plannerResult" class="planner-empty">
+                <div class="planner-empty-icon">✦</div>
+                <p>Enter your data and click Generate Prediction</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("plannerForm");
+    const inputs = form.querySelectorAll("input");
+
+    inputs.forEach(input => {
+        const saved = localStorage.getItem("planner_" + input.name);
+        if (saved !== null) {
+            input.value = saved;
+        }
+    });
+
+    inputs.forEach(input => {
+        input.addEventListener("input", () => {
+            localStorage.setItem("planner_" + input.name, input.value);
+        });
+    });
+});
+
+document.getElementById("plannerForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const payload = {};
+
+    formData.forEach((value, key) => {
+        payload[key] = value;
+        localStorage.setItem("planner_" + key, value);
+    });
+
+    const resultBox = document.getElementById("plannerResult");
+    resultBox.innerHTML = `<div class="planner-loading">Processing AI prediction...</div>`;
+
+    try {
+        const response = await fetch("/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            resultBox.innerHTML = `
+                <div class="planner-error-box">${data.error}</div>
+            `;
+            return;
+        }
+
+        resultBox.innerHTML = `
+            <div class="planner-metric-grid">
+                <div class="planner-metric">
+                    <span>Current Balance</span>
+                    <strong>₹${data.current_balance}</strong>
+                </div>
+
+                <div class="planner-metric">
+                    <span>Predicted End-of-Week Balance</span>
+                    <strong>₹${data.predicted_balance}</strong>
+                </div>
+
+                <div class="planner-metric">
+                    <span>Emergency Buffer</span>
+                    <strong>₹${data.emergency_buffer}</strong>
+                </div>
+
+                <div class="planner-metric">
+                    <span>Surplus</span>
+                    <strong>₹${data.surplus}</strong>
+                </div>
+
+                <div class="planner-metric planner-metric-full">
+                    <span>Recommended Savings</span>
+                    <strong>₹${data.savings}</strong>
+                </div>
+            </div>
+
+            <div class="planner-message-box">
+                <h3>Decision</h3>
+                <p>${data.message}</p>
+            </div>
+        `;
+    } catch (error) {
+        resultBox.innerHTML = `
+            <div class="planner-error-box">Failed to connect to prediction service.</div>
+        `;
+    }
+});
+</script>
+{% endblock %}

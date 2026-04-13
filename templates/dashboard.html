@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Smart Savings AI{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="top-row">
+        <div>
+            <h1>Welcome back, Alex</h1>
+            <p>Here's your financial overview for April 2026</p>
+        </div>
+        <div class="avatar">A</div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-top">
+                <span class="stat-icon cyan">$</span>
+                <span class="trend up">↑ +12%</span>
+            </div>
+            <h4>Recommended Savings</h4>
+            <h2>$1,245</h2>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-top">
+                <span class="stat-icon pink">🛡</span>
+                <span class="trend up">↑ +8%</span>
+            </div>
+            <h4>Emergency Buffer</h4>
+            <h2>$3,200</h2>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-top">
+                <span class="stat-icon blue">↗</span>
+                <span class="trend up">↑ +15%</span>
+            </div>
+            <h4>AI Predicted Balance</h4>
+            <h2>$7,500</h2>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-top">
+                <span class="stat-icon orange">!</span>
+                <span class="trend down">↓ -5%</span>
+            </div>
+            <h4>Monthly Expenses</h4>
+            <h2>$2,840</h2>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <h2>Financial Trend</h2>
+        <canvas id="financialTrendChart"></canvas>
+        <div class="chart-legend">
+            <span><i class="dot cyan"></i> Actual Balance</span>
+            <span><i class="dot purple"></i> AI Prediction</span>
+        </div>
+    </div>
+
+    <div class="insight-card">
+        <h2>Behavioral Insights</h2>
+        {% for item in insights_list %}
+        <div class="insight-row">
+            <span class="insight-badge">!</span>
+            <span>{{ item }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+const trendLabels = {{ trend_labels | tojson }};
+const actualBalance = {{ actual_balance | tojson }};
+const predictedBalance = {{ predicted_balance | tojson }};
+
+new Chart(document.getElementById('financialTrendChart'), {
+    type: 'line',
+    data: {
+        labels: trendLabels,
+        datasets: [
+            {
+                label: 'Actual Balance',
+                data: actualBalance,
+                borderColor: '#15c5ff',
+                backgroundColor: 'rgba(21,197,255,0.10)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#15c5ff'
+            },
+            {
+                label: 'AI Prediction',
+                data: predictedBalance,
+                borderColor: '#8b5cf6',
+                backgroundColor: 'rgba(139,92,246,0)',
+                fill: false,
+                tension: 0.4,
+                borderDash: [6, 6],
+                pointBackgroundColor: '#8b5cf6'
+            }
+        ]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { ticks: { color: '#9aa4c7' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+            y: { ticks: { color: '#9aa4c7' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+        }
+    }
+});
+</script>
+{% endblock %}

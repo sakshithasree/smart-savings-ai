@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}AI Assistant - Smart Savings AI{% endblock %}
+
+{% block content %}
+<div class="page assistant-page">
+    <div class="page-header">
+        <h1>AI Assistant</h1>
+        <p>Get personalized financial advice powered by AI</p>
+    </div>
+
+    <section class="assistant-wrapper">
+        <div class="assistant-chat-card">
+            <div class="chat-body" id="chatBody">
+                <div class="chat-message assistant-message">
+                    <div class="chat-icon">
+                        <div class="icon-circle">🤖</div>
+                    </div>
+                    <div class="chat-bubble">
+                        <div class="message-label">AI Assistant</div>
+                        <p>
+                            Hello! I'm your Smart Savings AI Assistant. I can help you with financial
+                            planning, budget analysis, and personalized savings recommendations.
+                            How can I assist you today?
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-footer">
+                <div class="chat-input-row">
+                    <input
+                        type="text"
+                        id="userInput"
+                        class="chat-input"
+                        placeholder="Ask me anything about your finances..."
+                    >
+                    <button id="sendBtn" class="send-btn" type="button">➤</button>
+                </div>
+
+                <div class="quick-actions">
+                    <button class="quick-chip" type="button" onclick="setPrompt('Analyze my spending')">Analyze my spending</button>
+                    <button class="quick-chip" type="button" onclick="setPrompt('Savings recommendations')">Savings recommendations</button>
+                    <button class="quick-chip" type="button" onclick="setPrompt('Budget optimization')">Budget optimization</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="{{ url_for('static', filename='js/assistant.js') }}"></script>
+{% endblock %}

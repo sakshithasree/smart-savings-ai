@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}Scenario Lab - Smart Savings AI{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="page-header split-header">
+        <div>
+            <h1>Scenario Lab</h1>
+            <p>Generate a fresh 30-day random simulation powered by your model</p>
+        </div>
+        <div class="header-actions">
+            <button id="simulateBtn" class="primary-btn small-btn" type="button">Simulate</button>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <h2>30-Day Predicted Balance</h2>
+        <canvas id="scenarioChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h2>30-Day Recommended Savings</h2>
+        <canvas id="savingsChart"></canvas>
+    </div>
+
+    <div class="two-col-layout">
+        <div class="panel-card">
+            <h2>Simulation Summary</h2>
+            <div id="scenarioSummary" class="empty-state">
+                <div class="empty-icon">▶</div>
+                <p>Click Simulate to generate 30-day results</p>
+            </div>
+        </div>
+
+        <div class="panel-card">
+            <h2>Timeline Events</h2>
+            <div id="timelineContainer" class="timeline-container">
+                <div class="empty-state">
+                    <div class="empty-icon">✦</div>
+                    <p>No simulation yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+let scenarioChartInstance = null;
+let savingsChartInstance = null;
+
+document.getElementById("simulateBtn").addEventListener("click", async function() {
+    const summaryBox = document.getElementById("scenarioSummary");
+    const timelineContainer = document.getElementById("timelineContainer");
+
+    summaryBox.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon">⏳</div>
+            <p>Running simulation...</p>
+        </div>
+    `;
+
+    timelineContainer.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon">⏳</div>
+            <p>Generating events...</p>
+        </div>
+    `;
+
+    try {
+        const response = await fetch("/simulate-scenario", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({})
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            summaryBox.innerHTML = `<div class="scenario-error">${data.error}</div>`;
+            timelineContainer.innerHTML = "";
+            return;
+        }
+
+        summaryBox.innerHTML = `
+            <div class="result-box">
+                <h3>Days Simulated</h3>
+                <p>${data.summary.days_simulated}</p>
+            </div>
+
+            <div class="result-box">
+                <h3>Final Predicted Balance</h3>
+                <p>$${data.summary.final_balance}</p>
+            </div>
+
+            <div class="result-box">
+                <h3>Total Projected Savings</h3>
+                <p>$${data.summary.total_projected_savings}</p>
+            </div>
+        `;
+
+        if (scenarioChartInstance) scenarioChartInstance.destroy();
+        if (savingsChartInstance) savingsChartInstance.destroy();
+
+        const scenarioCtx = document.getElementById("scenarioChart").getContext("2d");
+        scenarioChartInstance = new Chart(scenarioCtx, {
+            type: "line",
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: "Predicted Balance",
+                    data: data.balances,
+                    borderColor: "#15c5ff",
+                    backgroundColor: "rgba(21,197,255,0.12)",
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: "#8b5cf6"
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: "#d4dbf5" } } },
+                scales: {
+                    x: { ticks: { color: "#9aa4c7" }, grid: { color: "rgba(255,255,255,0.06)" } },
+                    y: { ticks: { color: "#9aa4c7" }, grid: { color: "rgba(255,255,255,0.06)" } }
+                }
+            }
+        });
+
+        const savingsCtx = document.getElementById("savingsChart").getContext("2d");
+        savingsChartInstance = new Chart(savingsCtx, {
+            type: "bar",
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: "Recommended Savings",
+                    data: data.savings,
+                    backgroundColor: "#8b5cf6",
+                    borderRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: "#d4dbf5" } } },
+                scales: {
+                    x: { ticks: { color: "#9aa4c7" }, grid: { color: "rgba(255,255,255,0.06)" } },
+                    y: { ticks: { color: "#9aa4c7" }, grid: { color: "rgba(255,255,255,0.06)" } }
+                }
+            }
+        });
+
+        let timelineHTML = "";
+        data.records.forEach(item => {
+            timelineHTML += `
+                <div class="sim-card ${item.event_type}">
+                    <div class="sim-card-top">
+                        <div class="sim-day">Day ${item.day}</div>
+                        <div class="sim-badge">${item.message}</div>
+                    </div>
+
+                    <div class="sim-grid">
+                        <div><span>Income</span><strong>$${item.income}</strong></div>
+                        <div><span>Expense</span><strong>$${item.expense}</strong></div>
+                        <div><span>Txn Count</span><strong>${item.txn_count}</strong></div>
+                        <div><span>Avg Txn</span><strong>$${item.avg_txn}</strong></div>
+                        <div><span>Predicted Balance</span><strong>$${item.predicted_balance}</strong></div>
+                        <div><span>Emergency Buffer</span><strong>$${item.emergency_buffer}</strong></div>
+                        <div><span>Surplus</span><strong>$${item.surplus}</strong></div>
+                        <div><span>Savings</span><strong>$${item.recommended_savings}</strong></div>
+                    </div>
+                </div>
+            `;
+        });
+
+        timelineContainer.innerHTML = timelineHTML;
+
+    } catch (error) {
+        summaryBox.innerHTML = `<div class="scenario-error">Failed to run simulation.</div>`;
+        timelineContainer.innerHTML = "";
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Reports - Smart Savings AI{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="page-header split-header">
+        <div>
+            <h1>Financial Reports</h1>
+            <p>Comprehensive financial summaries and analytics</p>
+        </div>
+        <button class="primary-btn small-btn">Download PDF</button>
+    </div>
+
+    <div class="report-card">
+        <div class="report-head">
+            <div>
+                <h2>Weekly Report</h2>
+                <p>April 1-7, 2026</p>
+            </div>
+            <div class="pill">Period: Week 1</div>
+        </div>
+
+        <div class="stats-grid three-up">
+            <div class="mini-stat-card">
+                <h4>Total Income</h4>
+                <h2>$1,625</h2>
+                <p class="up">+8% from last week</p>
+            </div>
+            <div class="mini-stat-card">
+                <h4>Total Expenses</h4>
+                <h2>$680</h2>
+                <p class="down">-5% from last week</p>
+            </div>
+            <div class="mini-stat-card">
+                <h4>Net Savings</h4>
+                <h2>$945</h2>
+                <p class="up">+18% from last week</p>
+            </div>
+        </div>
+
+        <div class="chart-card no-padding-chart">
+            <canvas id="weeklyReportChart"></canvas>
+        </div>
+    </div>
+
+    <div class="report-card">
+        <div class="report-head">
+            <div>
+                <h2>Monthly Report</h2>
+                <p>January - April 2026</p>
+            </div>
+            <div class="pill">Q1 Summary</div>
+        </div>
+
+        <div class="stats-grid four-up">
+            <div class="mini-stat-card">
+                <h4>Total Income</h4>
+                <h2>$26,700</h2>
+                <p class="up">4 months</p>
+            </div>
+            <div class="mini-stat-card">
+                <h4>Total Expenses</h4>
+                <h2>$11,130</h2>
+                <p>Average: $2,783/mo</p>
+            </div>
+            <div class="mini-stat-card">
+                <h4>Total Savings</h4>
+                <h2>$15,570</h2>
+                <p class="up">58% savings rate</p>
+            </div>
+            <div class="mini-stat-card">
+                <h4>Best Month</h4>
+                <h2>March</h2>
+                <p>$4,360 saved</p>
+            </div>
+        </div>
+
+        <div class="chart-card no-padding-chart">
+            <canvas id="monthlyReportChart"></canvas>
+        </div>
+
+        <div class="key-insights">
+            <h3>↗ Key Insights</h3>
+            <ul>
+                <li>Your savings rate of 58% is exceptional and well above the recommended 20%</li>
+                <li>March showed the highest savings due to additional freelance income</li>
+                <li>Expenses have remained stable, indicating good spending discipline</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+const weeklyReportLabels = {{ weekly_report_labels | tojson }};
+const weeklyReportValues = {{ weekly_report_values | tojson }};
+const monthlyReportLabels = {{ monthly_report_labels | tojson }};
+const monthlyIncome = {{ monthly_income | tojson }};
+const monthlyExpenses = {{ monthly_expenses | tojson }};
+const monthlySavings = {{ monthly_savings | tojson }};
+
+new Chart(document.getElementById('weeklyReportChart'), {
+    type: 'bar',
+    data: {
+        labels: weeklyReportLabels,
+        datasets: [{
+            data: weeklyReportValues,
+            backgroundColor: ['#17c6ff','#20c3ff','#2fb5ff','#8b5cf6'],
+            borderRadius: 12
+        }]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { ticks: { color: '#9aa4c7' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+            y: { ticks: { color: '#9aa4c7' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+        }
+    }
+});
+
+new Chart(document.getElementById('monthlyReportChart'), {
+    type: 'line',
+    data: {
+        labels: monthlyReportLabels,
+        datasets: [
+            {
+                label: 'Income',
+                data: monthlyIncome,
+                borderColor: '#10b981',
+                tension: 0.35,
+                pointBackgroundColor: '#10b981'
+            },
+            {
+                label: 'Expenses',
+                data: monthlyExpenses,
+                borderColor: '#ef4444',
+                tension: 0.35,
+                pointBackgroundColor: '#ef4444'
+            },
+            {
+                label: 'Savings',
+                data: monthlySavings,
+                borderColor: '#15c5ff',
+                tension: 0.35,
+                pointBackgroundColor: '#15c5ff'
+            }
+        ]
+    },
+    options: {
+        plugins: { legend: { labels: { color: '#c5cae6' } } },
+        scales: {
+            x: { ticks: { color: '#9aa4c7' }, grid: { color: 'rgba(255,255,255,0.06)' } },
+            y: { ticks: { color: '#9aa4c7' }, grid: { color: 'rgba(255,255,255,0.06)' } }
+        }
+    }
+});
+</script>
+{% endblock %}

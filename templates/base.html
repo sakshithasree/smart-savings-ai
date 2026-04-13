@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Savings AI{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        {% if request.path != '/' %}
+        <aside class="sidebar">
+            <div class="brand-block">
+                <h2>Smart Savings AI</h2>
+                <p>Hybrid Financial Intelligence</p>
+            </div>
+
+            <a href="/" class="back-home">← Back to Home</a>
+
+            <nav class="nav-links">
+                <a href="/dashboard" class="{% if request.path == '/dashboard' %}active{% endif %}">Dashboard</a>
+                <a href="/planner" class="{% if request.path == '/planner' %}active{% endif %}">Financial Planner</a>
+                <a href="/scenario" class="{% if request.path == '/scenario' %}active{% endif %}">Scenario Lab</a>
+                <a href="/insights" class="{% if request.path == '/insights' %}active{% endif %}">Insights</a>
+                <a href="/reports" class="{% if request.path == '/reports' %}active{% endif %}">Reports</a>
+                <a href="/assistant" class="{% if request.path == '/assistant' %}active{% endif %}">AI Assistant</a>
+                <a href="/profile" class="{% if request.path == '/profile' %}active{% endif %}">Profile</a>
+            </nav>
+        </aside>
+        {% endif %}
+
+        <main class="{% if request.path == '/' %}main-home{% else %}main-content{% endif %}">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block page_scripts %}{% endblock %}
+</body>
+</html>
