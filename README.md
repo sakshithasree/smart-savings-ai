@@ -38,13 +38,7 @@ The research compared six regression models across a dataset of **84,000 records
 
 The proposed hybrid model (LSTM + XGBoost) outperforms all baselines by a statistically significant margin.
 
-**Research Team**
 
-| Name | Role | Institution |
-|---|---|---|
-| Nivetha R | Associate Professor (Supervisor) | Kumaraguru College of Technology |
-| Sakshitha Sree | Research Author | Kumaraguru College of Technology |
-| Madhumitha S | Research Author | Kumaraguru College of Technology |
 
 ---
 
