@@ -476,4 +476,7 @@ The following improvements are recommended for subsequent development iterations
 10. J. Hull, *Risk Management and Financial Institutions*, Wiley, 2015.
 
 ---
+## Team Members
 
+- Sakshitha Sree  
+- Madhumitha S  
