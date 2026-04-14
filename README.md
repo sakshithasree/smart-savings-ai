@@ -8,6 +8,11 @@ Smart Savings AI is a financial intelligence platform that forecasts a user's fu
 
 
 ---
+## Problem Statement
+
+Traditional financial planning methods fail to adapt to dynamic spending behavior and temporal patterns in user transactions.
+
+This project aims to build an intelligent system that predicts future financial balance and provides safe, personalized savings recommendations using a hybrid machine learning approach.
 
 ## Table of Contents
 
