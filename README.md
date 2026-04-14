@@ -29,11 +29,13 @@ This project aims to build an intelligent system that predicts future financial 
 - [Model Performance](#model-performance)
 - [API Surface](#api-surface)
 - [Frontend Application](#frontend-application)
+- [Sample Output](#Sample-Output)
 - [Local Setup](#local-setup)
 - [Configuration](#configuration)
 - [Current Constraints](#current-constraints)
 - [Future Enhancements](#future-enhancements)
 - [References](#references)
+- [Team Members](#Team-Members)
 
 ---
 
