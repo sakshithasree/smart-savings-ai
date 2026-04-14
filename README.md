@@ -14,6 +14,8 @@ Traditional financial planning methods fail to adapt to dynamic spending behavio
 
 This project aims to build an intelligent system that predicts future financial balance and provides safe, personalized savings recommendations using a hybrid machine learning approach.
 
+---
+
 ## Table of Contents
 
 - [Research Background](#research-background)
@@ -385,7 +387,17 @@ POST /predict
 - Visual interpretation of model outputs including actual vs. predicted balance comparison
 
 ---
+## Sample Output
 
+### Financial Planner Output
+
+![Planner Output](static/images/output1.png)
+
+### Dashboard Visualization
+
+![Dashboard](static/images/output2.png)
+
+---
 ## Local Setup
 
 ### Requirements
